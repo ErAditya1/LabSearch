@@ -1,6 +1,6 @@
 import { searchDocuments } from "@/lib/search";
 import { IDocument } from "@/types/document";
-import { truncateText } from "@/utils/helpers";
+import { truncate } from "@/utils/helpers";
 
 export interface SearchResultWithSnippet {
   document: IDocument;
@@ -18,13 +18,13 @@ export class SearchService {
   }
 
   private static extractSnippet(text: string, query: string, contextLength = 200): string {
-    if (!text || !query) return truncateText(text, contextLength);
+    if (!text || !query) return truncate(text, contextLength);
 
     const lowerText = text.toLowerCase();
     const lowerQuery = query.toLowerCase();
     const index = lowerText.indexOf(lowerQuery);
 
-    if (index === -1) return truncateText(text, contextLength);
+    if (index === -1) return truncate(text, contextLength);
 
     const start = Math.max(0, index - 80);
     const end = Math.min(text.length, index + query.length + 120);
