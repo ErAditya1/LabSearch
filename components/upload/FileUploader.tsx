@@ -57,6 +57,19 @@ export default function FileUploader({ onSuccess }: FileUploaderProps) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Upload failed");
 
+      // Trigger OCR processing
+      setProgress(85);
+      const ocrRes = await fetch("/api/ocr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ documentId: data.documentId }),
+      });
+
+      if (!ocrRes.ok) {
+        // Log OCR failure but still consider upload successful
+        console.warn("OCR processing failed or timed out");
+      }
+
       setProgress(100);
       setStatus("success");
       setTimeout(() => {
@@ -127,16 +140,19 @@ export default function FileUploader({ onSuccess }: FileUploaderProps) {
 
       {/* Title input */}
       {file && status === "idle" && (
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-700">
-            Document Title
+        <div className="rounded-2xl border border-blue-200 bg-white p-6 shadow-sm">
+          <label className="mb-2 block text-base font-semibold text-slate-800">
+            Document Title <span className="text-red-500">*</span>
           </label>
+          <p className="mb-3 text-sm text-slate-500">
+            This title will be displayed in search results and the document library.
+          </p>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter a descriptive title..."
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-lg font-medium text-slate-900 placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all"
           />
         </div>
       )}
