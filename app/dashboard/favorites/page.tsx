@@ -6,6 +6,7 @@ import DocumentViewer from "@/components/documents/DocumentViewer";
 import Loader from "@/components/ui/Loader";
 import { IDocument } from "@/types/document";
 import { Heart } from "lucide-react";
+import RouteGuard from "@/components/auth/RouteGuard";
 
 export default function FavoritesPage() {
   const queryClient = useQueryClient();
@@ -32,34 +33,36 @@ export default function FavoritesPage() {
     .filter(Boolean);
 
   return (
-    <div className="space-y-6">
-      <p className="text-slate-500">{docs.length} saved test method{docs.length !== 1 ? "s" : ""}</p>
+    <RouteGuard allowedRoles={["admin", "analyst"]}>
+      <div className="space-y-6">
+        <p className="text-slate-500">{docs.length} saved test method{docs.length !== 1 ? "s" : ""}</p>
 
-      {docs.length === 0 ? (
-        <div className="flex h-64 flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-slate-200">
-          <Heart className="h-12 w-12 text-slate-300" />
-          <div className="text-center">
-            <p className="text-lg font-semibold text-slate-600">No favorites yet</p>
-            <p className="text-sm text-slate-400">Click the heart icon on any document to save it here</p>
+        {docs.length === 0 ? (
+          <div className="flex h-64 flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-slate-200">
+            <Heart className="h-12 w-12 text-slate-300" />
+            <div className="text-center">
+              <p className="text-lg font-semibold text-slate-600">No favorites yet</p>
+              <p className="text-sm text-slate-400">Click the heart icon on any document to save it here</p>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {docs.map((doc) => (
-            <DocumentCard
-              key={doc._id}
-              document={doc}
-              isFavorited={true}
-              onView={setViewingDoc}
-              onFavorite={(id) => favMutation.mutate(id)}
-            />
-          ))}
-        </div>
-      )}
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {docs.map((doc) => (
+              <DocumentCard
+                key={doc._id}
+                document={doc}
+                isFavorited={true}
+                onView={setViewingDoc}
+                onFavorite={(id) => favMutation.mutate(id)}
+              />
+            ))}
+          </div>
+        )}
 
-      {viewingDoc && (
-        <DocumentViewer document={viewingDoc} onClose={() => setViewingDoc(null)} />
-      )}
-    </div>
+        {viewingDoc && (
+          <DocumentViewer document={viewingDoc} onClose={() => setViewingDoc(null)} />
+        )}
+      </div>
+    </RouteGuard>
   );
 }

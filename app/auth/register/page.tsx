@@ -38,65 +38,60 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
-            <div className="pointer-events-none absolute inset-0 opacity-20"
-                style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
+        <div className="flex min-h-screen bg-slate-50">
 
-            <div className="relative w-full max-w-md px-6">
-                <div className="mb-8 text-center">
-                    <div className="mb-4 flex items-center justify-center">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500 shadow-xl shadow-blue-500/30">
-                            <FlaskConical className="h-8 w-8 text-white" />
+            {/* Left Form Section */}
+            <div className="flex w-full flex-col justify-center px-4 py-12 sm:px-6 lg:w-1/2 lg:px-20 xl:px-24">
+                <div className="mx-auto w-full max-w-sm lg:w-96">
+                    <div className="mb-8">
+                        <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-500/30">
+                            <FlaskConical className="h-6 w-6 text-white" />
                         </div>
+                        <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Sign up for LabSearch</h1>
+                        <p className="mt-2 text-sm text-slate-500">Create your account</p>
                     </div>
-                    <h1 className="text-3xl font-bold text-white">LabSearch</h1>
-                    <p className="mt-2 text-blue-300">Create your account</p>
-                </div>
-
-                <div className="rounded-2xl bg-white/10 p-8 backdrop-blur-md border border-white/20 shadow-2xl">
-                    <h2 className="mb-6 text-xl font-bold text-white">Sign up</h2>
 
                     {error && (
-                        <div className="mb-4 flex items-center gap-2 rounded-xl bg-red-500/20 px-4 py-3 text-red-200 border border-red-500/30">
-                            <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                            <p className="text-sm">{error}</p>
+                        <div className="mb-6 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
+                            <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                            <p className="text-sm font-medium">{error}</p>
                         </div>
                     )}
 
                     {success && (
-                        <div className="mb-4 flex items-center gap-2 rounded-xl bg-green-500/20 px-4 py-3 text-green-200 border border-green-500/30">
-                            <CheckCircle className="h-4 w-4 flex-shrink-0" />
-                            <p className="text-sm">Account created! Redirecting to login...</p>
+                        <div className="mb-6 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 p-4 text-green-600">
+                            <CheckCircle className="h-5 w-5 flex-shrink-0" />
+                            <p className="text-sm font-medium">Account created! Redirecting to login...</p>
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label className="mb-1.5 block text-sm font-medium text-blue-200">Full Name</label>
+                            <label className="mb-1.5 block text-sm font-medium text-slate-700">Full Name</label>
                             <input
                                 type="text"
                                 required
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                                 placeholder="John Doe"
-                                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/40 outline-none backdrop-blur-sm transition focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
+                                className="block w-full rounded-xl border-slate-300 px-4 py-3.5 text-slate-900 shadow-sm outline-none border focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors"
                             />
                         </div>
 
                         <div>
-                            <label className="mb-1.5 block text-sm font-medium text-blue-200">Email address</label>
+                            <label className="mb-1.5 block text-sm font-medium text-slate-700">Email address</label>
                             <input
                                 type="email"
                                 required
                                 value={form.email}
                                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                                 placeholder="analyst@laboratory.com"
-                                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/40 outline-none backdrop-blur-sm transition focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
+                                className="block w-full rounded-xl border-slate-300 px-4 py-3.5 text-slate-900 shadow-sm outline-none border focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors"
                             />
                         </div>
 
                         <div>
-                            <label className="mb-1.5 block text-sm font-medium text-blue-200">Password</label>
+                            <label className="mb-1.5 block text-sm font-medium text-slate-700">Password</label>
                             <input
                                 type="password"
                                 required
@@ -104,24 +99,39 @@ export default function RegisterPage() {
                                 value={form.password}
                                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                                 placeholder="Min 6 characters"
-                                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/40 outline-none backdrop-blur-sm transition focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
+                                className="block w-full rounded-xl border-slate-300 px-4 py-3.5 text-slate-900 shadow-sm outline-none border focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors"
                             />
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading || success}
-                            className="mt-2 w-full rounded-xl bg-blue-600 px-6 py-3.5 text-base font-semibold text-white transition-all hover:bg-blue-500 disabled:opacity-50 shadow-lg shadow-blue-600/30"
+                            className="mt-4 flex w-full justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 animate-in fade-in transition-all disabled:opacity-50"
                         >
                             {loading ? "Creating account..." : "Sign Up"}
                         </button>
                     </form>
 
-                    <p className="mt-6 text-center text-sm text-white/50">
-                        Already have an account?{" "}
-                        <a href="/auth/login" className="text-blue-300 hover:text-blue-200 transition-colors">
+                    <div className="mt-8 text-center text-sm">
+                        <span className="text-slate-500">Already have an account? </span>
+                        <a href="/auth/login" className="font-semibold text-blue-600 hover:text-blue-500 transition-colors">
                             Sign In
                         </a>
+                    </div>
+                </div>
+            </div>
+
+            {/* Right Banner Section (Hidden on Mobile) */}
+            <div className="hidden lg:relative lg:block lg:w-1/2 overflow-hidden bg-slate-900">
+                <div
+                    className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=1500&q=80')] bg-cover bg-center mix-blend-overlay"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+
+                <div className="absolute bottom-0 left-0 right-0 p-16 text-white text-center">
+                    <h2 className="text-3xl font-bold tracking-tight mb-4">Join Your Digital Lab</h2>
+                    <p className="text-lg text-slate-300">
+                        Create an account to access procedures, collaborate with analysts, and securely search your lab document library.
                     </p>
                 </div>
             </div>

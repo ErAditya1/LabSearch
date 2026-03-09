@@ -32,9 +32,9 @@ export default function SearchResultCard({
   // Highlight query in snippet
   const highlightedSnippet = snippet && query
     ? snippet.replace(
-        new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"),
-        '<mark class="bg-yellow-200 text-yellow-900 rounded px-0.5">$1</mark>'
-      )
+      new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"),
+      '<mark class="bg-yellow-200 text-yellow-900 rounded px-0.5">$1</mark>'
+    )
     : snippet;
 
   return (
@@ -84,17 +84,19 @@ export default function SearchResultCard({
             </button>
           )}
           <div className="flex gap-2">
-            <button
-              onClick={handleFavorite}
-              className={cn(
-                "rounded-xl border px-3 py-2 transition-colors",
-                favorited
-                  ? "border-red-200 bg-red-50 text-red-500"
-                  : "border-slate-200 text-slate-400 hover:border-red-200 hover:text-red-400"
-              )}
-            >
-              <Heart className={cn("h-4 w-4", favorited && "fill-current")} />
-            </button>
+            {onFavorite && (
+              <button
+                onClick={handleFavorite}
+                className={cn(
+                  "rounded-xl border px-3 py-2 transition-colors",
+                  favorited
+                    ? "border-red-200 bg-red-50 text-red-500"
+                    : "border-slate-200 text-slate-400 hover:border-red-200 hover:text-red-400"
+                )}
+              >
+                <Heart className={cn("h-4 w-4", favorited && "fill-current")} />
+              </button>
+            )}
             <a
               href={document.fileUrl}
               target="_blank"

@@ -12,16 +12,26 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
   "/dashboard/settings": { title: "Settings", subtitle: "Configure your account" },
 };
 
-export default function Header() {
+import { Menu } from "lucide-react";
+
+export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const page = pageTitles[pathname] || { title: "LabSearch", subtitle: "" };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-8">
-      <div>
-        <h2 className="text-lg font-bold text-slate-800">{page.title}</h2>
-        <p className="text-xs text-slate-500">{page.subtitle}</p>
+    <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 md:px-8">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onMenuClick}
+          className="md:hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+        <div>
+          <h2 className="text-lg font-bold text-slate-800">{page.title}</h2>
+          <p className="hidden md:block text-xs text-slate-500">{page.subtitle}</p>
+        </div>
       </div>
       <div className="flex items-center gap-3">
         <div className="hidden sm:block text-right">

@@ -7,22 +7,25 @@ import {
 } from "lucide-react";
 import { cn } from "@/utils/helpers";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/upload", label: "Upload", icon: Upload },
-  { href: "/dashboard/library", label: "Library", icon: Library },
-  { href: "/dashboard/search", label: "Search", icon: Search },
-  { href: "/dashboard/favorites", label: "Favorites", icon: Heart },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+const navItems: { href: string; label: string; icon: any; roles: ("admin" | "analyst" | "viewer")[] }[] = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "analyst", "viewer"] },
+  { href: "/dashboard/upload", label: "Upload", icon: Upload, roles: ["admin", "analyst"] },
+  { href: "/dashboard/library", label: "Library", icon: Library, roles: ["admin", "analyst", "viewer"] },
+  { href: "/dashboard/search", label: "Search", icon: Search, roles: ["admin", "analyst", "viewer"] },
+  { href: "/dashboard/favorites", label: "Favorites", icon: Heart, roles: ["admin", "analyst"] },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings, roles: ["admin"] },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIsOpen?: (v: boolean) => void }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const role = (session?.user as any)?.role;
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r border-slate-200 bg-white">
+    <aside className={cn(
+      "fixed inset-y-0 left-0 z-50 flex h-screen w-72 flex-col border-r border-slate-200 bg-white transition-transform duration-300 md:static md:w-64 md:translate-x-0",
+      isOpen ? "translate-x-0" : "-translate-x-full"
+    )}>
       {/* Logo */}
       <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-5">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
@@ -37,17 +40,18 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <ul className="space-y-1">
-          {navItems.map(({ href, label, icon: Icon }) => {
+          {navItems.filter(item => !role || item.roles.includes(role as any)).map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
             return (
               <li key={href}>
                 <Link
                   href={href}
+                  onClick={() => setIsOpen?.(false)}
                   className={cn(
-                    "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
+                    "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all hover:bg-slate-50",
                     isActive
                       ? "bg-blue-50 text-blue-700"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      : "text-slate-600 hover:text-slate-900"
                   )}
                 >
                   <Icon className={cn("h-5 w-5", isActive ? "text-blue-600" : "text-slate-400")} />
@@ -67,8 +71,8 @@ export default function Sidebar() {
           <span className={cn(
             "mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize",
             role === "admin" ? "bg-purple-100 text-purple-700" :
-            role === "analyst" ? "bg-blue-100 text-blue-700" :
-            "bg-slate-100 text-slate-600"
+              role === "analyst" ? "bg-blue-100 text-blue-700" :
+                "bg-slate-100 text-slate-600"
           )}>
             {role}
           </span>

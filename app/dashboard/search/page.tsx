@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import SearchBox from "@/components/ui/SearchBox";
 import SearchResultCard from "@/components/search/SearchResultCard";
@@ -16,6 +17,8 @@ interface SearchResult {
 }
 
 export default function SearchPage() {
+  const { data: session } = useSession();
+  const role = (session?.user as any)?.role;
   const searchParams = useSearchParams();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -141,7 +144,7 @@ export default function SearchPage() {
                   snippet={snippet}
                   query={query}
                   onView={setViewingDoc}
-                  onFavorite={(id) => favMutation.mutate(id)}
+                  onFavorite={role !== "viewer" ? (id) => favMutation.mutate(id) : undefined}
                 />
               ))}
             </div>
