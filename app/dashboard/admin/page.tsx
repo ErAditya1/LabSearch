@@ -38,6 +38,18 @@ export default function AdminPage() {
     },
   });
 
+  const updateRoleMutation = useMutation({
+    mutationFn: ({ id, role }: { id: string, role: string }) =>
+      fetch(`/api/admin/users/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role }) }),
+    onSuccess: async (res) => {
+      const data = await res.json();
+      if (!res.ok) { setMsg("Error: " + (data.error || "Failed")); return; }
+      setMsg("Role updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setTimeout(() => setMsg(""), 3000);
+    },
+  });
+
   if (isLoading) return <div className="flex h-64 items-center justify-center"><Loader size="lg" /></div>;
 
   return (
@@ -110,13 +122,19 @@ export default function AdminPage() {
                 <td className="px-6 py-4 text-sm font-medium text-slate-800">{user.name || "—"}</td>
                 <td className="px-6 py-4 text-sm text-slate-600">{user.email}</td>
                 <td className="px-6 py-4">
-                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
-                    user.role === "admin" ? "bg-purple-100 text-purple-700" :
-                    user.role === "analyst" ? "bg-blue-100 text-blue-700" :
-                    "bg-slate-100 text-slate-600"
-                  }`}>
-                    {user.role}
-                  </span>
+                  <select
+                    value={user.role}
+                    onChange={(e) => updateRoleMutation.mutate({ id: user._id, role: e.target.value })}
+                    disabled={updateRoleMutation.isPending && updateRoleMutation.variables?.id === user._id}
+                    className={`appearance-none rounded-full px-3 py-1 text-xs font-semibold capitalize outline-none cursor-pointer focus:ring-2 focus:ring-purple-500 disabled:opacity-50 ${user.role === "admin" ? "bg-purple-100 text-purple-700" :
+                      user.role === "analyst" ? "bg-blue-100 text-blue-700" :
+                        "bg-slate-100 text-slate-600"
+                      }`}
+                  >
+                    <option className="bg-white text-slate-800" value="viewer">Viewer</option>
+                    <option className="bg-white text-slate-800" value="analyst">Analyst</option>
+                    <option className="bg-white text-slate-800" value="admin">Admin</option>
+                  </select>
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-500">
                   {new Date(user.createdAt).toLocaleDateString()}

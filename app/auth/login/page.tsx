@@ -108,8 +108,15 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-white/50">
-            Contact your lab administrator for account access.
+          <div className="mt-6 text-center text-sm">
+            <span className="text-white/50">Don't have an account? </span>
+            <a href="/auth/register" className="text-blue-300 hover:text-blue-200 transition-colors">
+              Sign Up
+            </a>
+          </div>
+
+          <p className="mt-4 text-center text-sm text-white/50">
+            Contact your lab administrator for specific role permissions.
           </p>
         </div>
 
