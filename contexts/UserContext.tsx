@@ -44,8 +44,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (!session) {
             // prevent redirect loop
-            if (pathname !== "/login") {
-                router.push("/login");
+            if (pathname !== "/auth/login") {
+                router.push("/auth/login");
             }
 
             setUser({

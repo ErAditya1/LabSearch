@@ -11,7 +11,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const session = await getServerSession();
   console.log(session);
   if (!session) {
-    redirect("/login");
+    redirect("/auth/login");
   }
 
 
