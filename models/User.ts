@@ -6,6 +6,7 @@ export interface IUserDocument extends Document {
   password: string;
   role: "admin" | "analyst" | "viewer";
   name?: string;
+  image?: string;
   createdAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -32,6 +33,9 @@ const UserSchema = new Schema<IUserDocument>(
     name: {
       type: String,
       trim: true,
+    },
+    image: {
+      type: String,
     },
   },
   { timestamps: true }

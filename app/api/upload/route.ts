@@ -6,10 +6,6 @@ import { uploadToImageKit } from "@/lib/imagekit";
 import LabDocument from "@/models/Document";
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "@/utils/constants";
 
-export const config = {
-  api: { bodyParser: false },
-};
-
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

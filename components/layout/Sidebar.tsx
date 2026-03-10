@@ -13,7 +13,7 @@ const navItems: { href: string; label: string; icon: any; roles: ("admin" | "ana
   { href: "/dashboard/library", label: "Library", icon: Library, roles: ["admin", "analyst", "viewer"] },
   { href: "/dashboard/search", label: "Search", icon: Search, roles: ["admin", "analyst", "viewer"] },
   { href: "/dashboard/favorites", label: "Favorites", icon: Heart, roles: ["admin", "analyst"] },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings, roles: ["admin"] },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings, roles: ["admin", "analyst", "viewer"] },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIsOpen?: (v: boolean) => void }) {

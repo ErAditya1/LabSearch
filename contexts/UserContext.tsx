@@ -7,69 +7,74 @@ import { useRouter, usePathname } from "next/navigation";
 type Role = "admin" | "analyst" | "viewer";
 
 type UserContextType = {
-  id: string | null;
-  email: string | null;
-  name: string | null;
-  role: Role | null;
-  isLoading: boolean;
+    id: string | null;
+    email: string | null;
+    name: string | null;
+    image: string | null;
+    role: Role | null;
+    isLoading: boolean;
 };
 
 const UserContext = createContext<UserContextType>({
-  id: null,
-  email: null,
-  name: null,
-  role: null,
-  isLoading: true,
-});
-
-export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const pathname = usePathname();
-  console.log(session)
-
-  const [user, setUser] = useState<UserContextType>({
     id: null,
     email: null,
     name: null,
+    image: null,
     role: null,
     isLoading: true,
-  });
+});
 
-  useEffect(() => {
-    if (status === "loading") return;
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const pathname = usePathname();
+    console.log(session)
 
-    if (!session) {
-      // prevent redirect loop
-      if (pathname !== "/login") {
-        router.push("/login");
-      }
-
-      setUser({
+    const [user, setUser] = useState<UserContextType>({
         id: null,
         email: null,
         name: null,
+        image: null,
         role: null,
-        isLoading: false,
-      });
-
-      return;
-    }
-
-    setUser({
-      id: (session.user as any)?.id ?? null,
-      email: session.user?.email ?? null,
-      name: session.user?.name ?? null,
-      role: (session.user as any)?.role ?? null,
-      isLoading: false,
+        isLoading: true,
     });
-  }, [session, status, router, pathname]);
 
-  return (
-    <UserContext.Provider value={user}>
-      {children}
-    </UserContext.Provider>
-  );
+    useEffect(() => {
+        if (status === "loading") return;
+
+        if (!session) {
+            // prevent redirect loop
+            if (pathname !== "/login") {
+                router.push("/login");
+            }
+
+            setUser({
+                id: null,
+                email: null,
+                name: null,
+                image: null,
+                role: null,
+                isLoading: false,
+            });
+
+            return;
+        }
+
+        setUser({
+            id: (session.user as any)?.id ?? null,
+            email: session.user?.email ?? null,
+            name: session.user?.name ?? null,
+            image: session.user?.image ?? null,
+            role: (session.user as any)?.role ?? null,
+            isLoading: false,
+        });
+    }, [session, status, router, pathname]);
+
+    return (
+        <UserContext.Provider value={user}>
+            {children}
+        </UserContext.Provider>
+    );
 };
 
 export const useUser = () => useContext(UserContext);
