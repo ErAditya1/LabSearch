@@ -43,8 +43,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         if (status === "loading") return;
 
         if (!session) {
-            // prevent redirect loop
-            if (pathname !== "/auth/login") {
+            // Only redirect to login if accessing protected routes
+            if (pathname?.startsWith("/dashboard")) {
                 router.push("/auth/login");
             }
 

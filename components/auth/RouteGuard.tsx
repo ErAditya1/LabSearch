@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@/contexts/UserContext";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
@@ -13,11 +13,15 @@ interface RouteGuardProps {
 export default function RouteGuard({ children, allowedRoles }: RouteGuardProps) {
     const { role, isLoading, id } = useUser();
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         if (!isLoading) {
             if (!id) {
-                router.push("/auth/login");
+                // Only redirect to login if accessing protected routes
+                if (pathname?.startsWith("/dashboard")) {
+                    router.push("/auth/login");
+                }
             } else if (role && !allowedRoles.includes(role)) {
                 // Redirect unauthorized users to the main dashboard
                 router.push("/dashboard");
