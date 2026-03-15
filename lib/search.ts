@@ -1,64 +1,64 @@
-import { connectDB } from "./db";
 import LabDocument from "@/models/Document";
-import { IDocument } from "@/types/document";
 
-/**
- * Search documents by query terms (title + extracted text) and return matching documents.
- */
 export async function searchDocuments(
   query: string,
-  field: "all" | "title" | "content" = "all"
-): Promise<{ documents: IDocument[]; total: number }> {
-  await connectDB();
+  type: "all" | "title" | "content"
+) {
+  const limit = 20;
 
-  const searchCriteria: any = {};
+  let searchQuery: any = {};
+  let projection: any = {};
+  let sort: any = { createdAt: -1 };
 
-  if (field === "title") {
-    searchCriteria.title = { $regex: query, $options: "i" };
-  } else if (field === "content") {
-    searchCriteria.extractedText = { $regex: query, $options: "i" };
-  } else {
-    // Default: title regex or text search on everything
-    searchCriteria.$or = [
-      { $text: { $search: query } },
-      { title: { $regex: query, $options: "i" } },
-    ];
+  if (type === "all") {
+    searchQuery = {
+      $text: { $search: query },
+    };
+
+    projection = {
+      score: { $meta: "textScore" },
+    };
+
+    sort = {
+      score: { $meta: "textScore" },
+    };
   }
 
-  const results = (await LabDocument.find(searchCriteria, {
-    score: { $meta: "textScore" },
-  })
-    .sort(field === "all" ? { score: { $meta: "textScore" } } : { createdAt: -1 })
-    .limit(20)
-    .lean()) as unknown as IDocument[];
+  if (type === "title") {
+    searchQuery = {
+      title: { $regex: query, $options: "i" },
+    };
+  }
 
-  return { documents: results, total: results.length };
+  if (type === "content") {
+    searchQuery = {
+      extractedText: { $regex: query, $options: "i" },
+    };
+  }
+
+  const documents = await LabDocument.find(searchQuery, projection)
+    .sort(sort)
+    .limit(limit)
+    .lean();
+
+  return { documents };
 }
 
-/**
- * Highlight matching text in a snippet for display in search results.
- */
-export function highlightText(text: string, query: string): string {
-  if (!query || !text) return text;
-  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
-  return text.replace(regex, "<mark>$1</mark>");
-}
-
-/**
- * Extract a relevant snippet from the extracted text around the search query.
- */
-export function extractSnippet(text: string, query: string, length: number = 200): string {
-  if (!text) return "";
-  const lowerText = text.toLowerCase();
-  const lowerQuery = query.toLowerCase();
-  const index = lowerText.indexOf(lowerQuery);
+export function extractSnippet(text: string, query: string) {
+  const index = text.toLowerCase().indexOf(query.toLowerCase());
 
   if (index === -1) {
-    return text.substring(0, length) + (text.length > length ? "..." : "");
+    return text.slice(0, 200);
   }
 
   const start = Math.max(0, index - 80);
-  const end = Math.min(text.length, index + query.length + 120);
-  const snippet = (start > 0 ? "..." : "") + text.substring(start, end) + (end < text.length ? "..." : "");
-  return snippet;
+  const end = Math.min(text.length, index + 120);
+
+  return text.slice(start, end);
+}
+
+export function highlightText(text: string, query: string) {
+  const regex = new RegExp(`(${query})`, "gi");
+
+  return text.replace(regex, `<mark>$1</mark>`);
 }
