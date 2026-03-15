@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { connectDB } from "@/lib/db";
-import LabDocument from "@/models/Document";
-import { extractSnippet, highlightText } from "@/lib/search";
+import { extractSnippet, highlightText, searchDocuments } from "@/lib/search";
 
 export async function GET(req: NextRequest) {
   try {
@@ -14,32 +12,19 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("q")?.trim();
+    const type = (searchParams.get("type") || "all") as "all" | "title" | "content";
 
     if (!query) {
       return NextResponse.json({ results: [] });
     }
 
-    await connectDB();
-
-    // MongoDB full-text search on extractedText and title
-    const results = await LabDocument.find(
-      {
-        $or: [
-          { $text: { $search: query } },
-          { title: { $regex: query, $options: "i" } },
-        ],
-      },
-      { score: { $meta: "textScore" } }
-    )
-      .sort({ score: { $meta: "textScore" } })
-      .limit(20)
-      .lean();
+    const { documents: results } = await searchDocuments(query, type);
 
     // Add highlighted snippets to each result
     const enriched = results.map((doc: any) => {
       const snippet = extractSnippet(doc.extractedText || "", query);
       return {
-        ...doc,
+        document: doc,
         snippet: highlightText(snippet, query),
       };
     });

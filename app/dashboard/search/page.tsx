@@ -24,6 +24,9 @@ export default function SearchPage() {
   const queryClient = useQueryClient();
   const [results, setResults] = useState<SearchResult[]>([]);
   const [query, setQuery] = useState(searchParams.get("q") || "");
+  const [searchType, setSearchType] = useState<"all" | "title" | "content">(
+    (searchParams.get("type") as any) || "all"
+  );
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [viewingDoc, setViewingDoc] = useState<IDocument | null>(null);
@@ -33,11 +36,16 @@ export default function SearchPage() {
     catch { return []; }
   });
 
-  const doSearch = useCallback(async (q: string) => {
+  const doSearch = useCallback(async (q: string, type: "all" | "title" | "content" = "all") => {
     if (!q.trim()) { setResults([]); setSearched(false); return; }
     setLoading(true);
     setQuery(q);
-    router.push(`/dashboard/search?q=${encodeURIComponent(q)}`, { scroll: false });
+    setSearchType(type);
+    
+    const params = new URLSearchParams();
+    params.set("q", q);
+    params.set("type", type);
+    router.push(`/dashboard/search?${params.toString()}`, { scroll: false });
 
     // Save to recent
     setRecentSearches((prev) => {
@@ -47,7 +55,7 @@ export default function SearchPage() {
     });
 
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=${type}`);
       const data = await res.json();
       setResults(data.results || []);
     } finally {
@@ -74,6 +82,7 @@ export default function SearchPage() {
       <SearchBox
         onSearch={doSearch}
         initialValue={query}
+        initialType={searchType}
         placeholder="Search test methods, chemicals, procedures..."
         large
       />

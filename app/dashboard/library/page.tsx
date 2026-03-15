@@ -15,6 +15,7 @@ export default function LibraryPage() {
   const queryClient = useQueryClient();
   const [viewingDoc, setViewingDoc] = useState<IDocument | null>(null);
   const [search, setSearch] = useState("");
+  const [searchType, setSearchType] = useState<"all" | "title" | "content">("all");
 
   const { data, isLoading } = useQuery({
     queryKey: ["documents"],
@@ -42,9 +43,16 @@ export default function LibraryPage() {
 
   const documents: IDocument[] = data?.documents || [];
 
-  const filtered = documents.filter((d) =>
-    !search || d.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = documents.filter((d) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    const titleMatch = d.title.toLowerCase().includes(q);
+    const contentMatch = (d.extractedText || "").toLowerCase().includes(q);
+
+    if (searchType === "title") return titleMatch;
+    if (searchType === "content") return contentMatch;
+    return titleMatch || contentMatch;
+  });
 
   if (isLoading) {
     return (
@@ -59,8 +67,11 @@ export default function LibraryPage() {
       {/* Search filter */}
       <div className="flex items-center gap-4">
         <SearchBox
-          onSearch={setSearch}
-          placeholder="Filter by title..."
+          onSearch={(q, type) => {
+            setSearch(q);
+            setSearchType(type);
+          }}
+          placeholder="Filter by title or content..."
           className="flex-1"
         />
         <p className="text-sm text-slate-500 whitespace-nowrap">{filtered.length} document{filtered.length !== 1 ? "s" : ""}</p>

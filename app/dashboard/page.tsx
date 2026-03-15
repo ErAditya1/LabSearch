@@ -28,9 +28,9 @@ export default function DashboardPage() {
     queryFn: () => fetch("/api/stats").then((r) => r.json()),
   });
 
-  const handleSearch = (query: string) => {
+  const handleSearch = (query: string, type: string = "all") => {
     if (query.trim()) {
-      router.push(`/dashboard/search?q=${encodeURIComponent(query)}`);
+      router.push(`/dashboard/search?q=${encodeURIComponent(query)}&type=${type}`);
     }
   };
 

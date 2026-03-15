@@ -5,19 +5,30 @@ import { IDocument } from "@/types/document";
 /**
  * Search documents by query terms (title + extracted text) and return matching documents.
  */
-export async function searchDocuments(query: string): Promise<{ documents: IDocument[]; total: number }> {
+export async function searchDocuments(
+  query: string,
+  field: "all" | "title" | "content" = "all"
+): Promise<{ documents: IDocument[]; total: number }> {
   await connectDB();
 
-  const results = (await LabDocument.find(
-    {
-      $or: [
-        { $text: { $search: query } },
-        { title: { $regex: query, $options: "i" } },
-      ],
-    },
-    { score: { $meta: "textScore" } }
-  )
-    .sort({ score: { $meta: "textScore" } })
+  const searchCriteria: any = {};
+
+  if (field === "title") {
+    searchCriteria.title = { $regex: query, $options: "i" };
+  } else if (field === "content") {
+    searchCriteria.extractedText = { $regex: query, $options: "i" };
+  } else {
+    // Default: title regex or text search on everything
+    searchCriteria.$or = [
+      { $text: { $search: query } },
+      { title: { $regex: query, $options: "i" } },
+    ];
+  }
+
+  const results = (await LabDocument.find(searchCriteria, {
+    score: { $meta: "textScore" },
+  })
+    .sort(field === "all" ? { score: { $meta: "textScore" } } : { createdAt: -1 })
     .limit(20)
     .lean()) as unknown as IDocument[];
 
