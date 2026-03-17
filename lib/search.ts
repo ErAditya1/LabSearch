@@ -62,3 +62,5 @@ export function highlightText(text: string, query: string) {
 
   return text.replace(regex, `<mark>$1</mark>`);
 }
+
+

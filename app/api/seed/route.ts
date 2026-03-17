@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
-import bcrypt from "bcryptjs";
 
 /**
  * One-time seed endpoint to create an admin user.
@@ -27,19 +26,17 @@ export async function GET(req: NextRequest) {
     }
 
     // Create admin user
-    const hashedPassword = await bcrypt.hash("admin123", 12);
     await User.create({
       email: "admin@lab.com",
-      password: hashedPassword,
+      password: "admin123",
       name: "Lab Admin",
       role: "admin",
     });
 
     // Create demo analyst
-    const analystHash = await bcrypt.hash("analyst123", 12);
     await User.create({
       email: "analyst@lab.com",
-      password: analystHash,
+      password: "analyst123",
       name: "Lab Analyst",
       role: "analyst",
     });

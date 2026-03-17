@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const CreateUserSchema = z.object({
@@ -42,8 +41,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email already in use" }, { status: 409 });
     }
 
-    const hashed = await bcrypt.hash(data.password, 12);
-    const user = await User.create({ ...data, password: hashed });
+    const user = await User.create({ ...data });
 
     return NextResponse.json({
       success: true,

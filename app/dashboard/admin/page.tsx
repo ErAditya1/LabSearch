@@ -1,7 +1,7 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { UserPlus, Shield } from "lucide-react";
+import { UserPlus, Shield, Trash2 } from "lucide-react";
 import Loader from "@/components/ui/Loader";
 import RouteGuard from "@/components/auth/RouteGuard";
 
@@ -35,6 +35,18 @@ export default function AdminPage() {
       const data = await res.json();
       if (!res.ok) { setMsg("Error: " + (data.error || "Failed")); return; }
       setMsg("Role updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setTimeout(() => setMsg(""), 3000);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) =>
+      fetch(`/api/admin/users/${id}`, { method: "DELETE" }),
+    onSuccess: async (res) => {
+      const data = await res.json();
+      if (!res.ok) { setMsg("Error: " + (data.error || "Failed")); return; }
+      setMsg("User deleted successfully!");
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setTimeout(() => setMsg(""), 3000);
     },
@@ -102,7 +114,7 @@ export default function AdminPage() {
           <table className="w-full">
             <thead className="bg-slate-50">
               <tr>
-                {["Name", "Email", "Role", "Joined"].map((h) => (
+                {["Name", "Email", "Role", "Joined", "Actions"].map((h) => (
                   <th key={h} className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">{h}</th>
                 ))}
               </tr>
@@ -129,6 +141,20 @@ export default function AdminPage() {
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-500">
                     {new Date(user.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to delete this user?")) {
+                          deleteMutation.mutate(user._id);
+                        }
+                      }}
+                      disabled={deleteMutation.isPending && deleteMutation.variables === user._id}
+                      className="rounded p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50"
+                      title="Delete User"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </td>
                 </tr>
               ))}
